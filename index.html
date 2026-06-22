@@ -1,1 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoubtHub — Learn Better, Together</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#e8eaf0;--ink2:#a0a3b8;--ink3:#5a5c6e;--mint:#00c48c;--violet:#6c63ff;--page-bg:#0d0f14;--border:#252836}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--page-bg);color:var(--ink);overflow-x:hidden}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2.5rem;background:#141720;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:.5rem;color:var(--ink)}
+.nav-logo span{color:var(--violet)}
+.nav-links{display:flex;gap:2rem}
+.nav-links a{font-size:.875rem;font-weight:500;color:var(--ink2);cursor:pointer;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--violet)}
+.nav-cta{display:flex;gap:.75rem}
+.btn-ghost{padding:.5rem 1.1rem;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;font-weight:600;color:var(--ink2);background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-ghost:hover{border-color:var(--violet);color:var(--violet)}
+.btn-filled{padding:.55rem 1.25rem;background:var(--violet);border:none;border-radius:8px;font-size:.85rem;font-weight:600;color:#fff;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-filled:hover{background:#5a52e0}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;padding:5rem 2.5rem 4rem;max-width:1200px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .9rem;background:rgba(108,99,255,.15);border:1px solid rgba(108,99,255,.3);border-radius:20px;font-size:.78rem;font-weight:600;color:var(--violet);margin-bottom:1.5rem}
+.dot{width:6px;height:6px;background:var(--mint);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{font-family:'Syne',sans-serif;font-size:3.4rem;font-weight:800;line-height:1.08;letter-spacing:-1.5px;margin-bottom:1.25rem}
+.hl{color:var(--violet)}.hl2{color:var(--mint)}
+.hero-sub{font-size:1.05rem;color:var(--ink2);line-height:1.75;margin-bottom:2rem;max-width:480px}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.btn-hero{padding:.85rem 2rem;background:var(--violet);border:none;border-radius:12px;font-size:1rem;font-weight:600;color:#fff;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
+.btn-hero:hover{background:#5a52e0;transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.3)}
+.btn-outline{padding:.85rem 2rem;background:transparent;border:2px solid var(--border);border-radius:12px;font-size:1rem;font-weight:600;color:var(--ink);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-outline:hover{border-color:var(--violet);color:var(--violet)}
+.trust{display:flex;align-items:center;gap:.75rem;font-size:.82rem;color:var(--ink3)}
+.avatars{display:flex}
+.av{width:28px;height:28px;border-radius:50%;border:2px solid #0d0f14;margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff}
+.av:first-child{margin-left:0}
+.hero-visual{position:relative;height:400px}
+.fc{position:absolute;background:#181c27;border:1px solid var(--border);border-radius:16px;padding:1rem 1.25rem;box-shadow:0 4px 24px rgba(0,0,0,.3);animation:float 3s ease-in-out infinite}
+.fc1{top:20px;left:10%;width:240px;animation-delay:0s}
+.fc2{top:130px;right:5%;width:200px;animation-delay:.8s}
+.fc3{bottom:50px;left:15%;width:220px;animation-delay:1.6s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.fc-tag{font-size:.7rem;font-weight:600;color:var(--violet);background:rgba(108,99,255,.15);padding:.2rem .6rem;border-radius:20px;display:inline-block;margin-bottom:.5rem}
+.fc-q{font-size:.83rem;font-weight:600;color:var(--ink);margin-bottom:.4rem}
+.fc-meta{font-size:.72rem;color:var(--ink3)}
+.fc-ans{font-size:.72rem;font-weight:600;color:var(--mint);margin-top:.4rem}
+.features{padding:5rem 2.5rem;max-width:1200px;margin:0 auto}
+.sec-label{font-size:.78rem;font-weight:600;color:var(--violet);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.75rem}
+.sec-title{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;margin-bottom:2rem;letter-spacing:-.5px;color:var(--ink)}
+.feat-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.feat-card{background:#181c27;border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:all .25s}
+.feat-card:hover{border-color:var(--violet);box-shadow:0 8px 32px rgba(108,99,255,.15);transform:translateY(-3px)}
+.feat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.feat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem;color:var(--ink)}
+.feat-desc{font-size:.85rem;color:var(--ink2);line-height:1.65}
+.how{padding:5rem 2.5rem;background:#141720;border-top:1px solid var(--border)}
+.how-inner{max-width:900px;margin:0 auto;text-align:center}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem;position:relative}
+.steps::before{content:'';position:absolute;top:28px;left:12%;right:12%;height:1px;background:var(--border)}
+.step{position:relative;z-index:1}
+.step-n{width:56px;height:56px;border-radius:50%;background:#0d0f14;border:2px solid var(--violet);color:var(--violet);font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.step-t{font-weight:600;font-size:.9rem;margin-bottom:.4rem;color:var(--ink)}
+.step-d{font-size:.8rem;color:var(--ink2);line-height:1.5}
+.cta-band{padding:5rem 2.5rem;background:var(--violet);text-align:center}
+.cta-band h2{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:1rem;letter-spacing:-.5px}
+.cta-band p{color:rgba(255,255,255,.75);font-size:1rem;margin-bottom:2rem}
+.btn-white{padding:1rem 2.5rem;background:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;color:var(--violet);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+footer{background:#141720;border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink)}
+.f-logo span{color:var(--violet)}
+.f-links{display:flex;gap:1.5rem}
+.f-links a{font-size:.82rem;color:var(--ink3);text-decoration:none;transition:color .2s}
+.f-links a:hover{color:var(--violet)}
+.f-copy{font-size:.78rem;color:var(--ink3)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:#181c27;border:1px solid var(--border);border-radius:20px;padding:2rem;width:420px;max-width:100%;box-shadow:0 24px 80px rgba(0,0,0,.5);animation:min .3s ease}
+@keyframes min{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.modal-head h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--ink)}
+.modal-close{background:transparent;border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:.85rem;color:var(--ink3)}
+.modal-tabs{display:flex;background:#0d0f14;border-radius:10px;padding:3px;margin-bottom:1.5rem}
+.mtab{flex:1;padding:.55rem;border-radius:8px;border:none;background:transparent;font-size:.85rem;font-weight:600;color:var(--ink2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.mtab.active{background:#1c202c;color:var(--violet);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.78rem;font-weight:600;color:var(--ink2);margin-bottom:.35rem}
+.field input{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;outline:none;background:#1c202c;transition:border .2s}
+.field input:focus{border-color:var(--violet)}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem}
+.chip{padding:.3rem .7rem;border-radius:20px;background:#1c202c;border:1px solid var(--border);font-size:.75rem;color:var(--ink2);cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.chip.sel{background:var(--violet);border-color:var(--violet);color:#fff}
+.msg{font-size:.82rem;padding:.7rem;border-radius:8px;margin-top:.75rem;text-align:center;display:none}
+.msg.err{background:rgba(255,80,80,.1);color:#ff6b6b;border:1px solid rgba(255,80,80,.2);display:block}
+.msg.ok{background:rgba(0,212,170,.1);color:var(--mint);border:1px solid rgba(0,212,170,.2);display:block}
+.hidden{display:none!important}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:3rem 1.5rem}.hero-visual{display:none}.feat-grid{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:repeat(2,1fr)}.steps::before{display:none}.nav-links{display:none}}
+@media(max-width:600px){.hero-title{font-size:2.4rem}.feat-grid{grid-template-columns:1fr}nav{padding:.9rem 1.25rem}.hero,.features,.cta-band{padding:3rem 1.25rem}.how{padding:2rem 1.25rem}footer{flex-direction:column;padding:1.5rem 1.25rem}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>⊕</span> DoubtHub</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#about">About</a>
+  </div>
+  <div class="nav-cta">
+    <button class="btn-ghost" onclick="openModal('login')">Log in</button>
+    <button class="btn-filled" onclick="openModal('signup')">Sign up free</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="hero-badge"><span class="dot"></span> Peer learning, reimagined</div>
+    <h1 class="hero-title">Solve Doubts.<br><span class="hl">Learn Faster.</span><br><span class="hl2">Together.</span></h1>
+    <p class="hero-sub">DoubtHub connects students who share the same subjects — ask questions, share notes, find study partners and chat in study groups.</p>
+    <div class="hero-actions">
+      <button class="btn-hero" onclick="openModal('signup')">Get Started Free →</button>
+      <button class="btn-outline" onclick="openModal('login')">I have an account</button>
+    </div>
+    <div class="trust">
+      <div class="avatars">
+        <div class="av" style="background:#6c63ff">R</div>
+        <div class="av" style="background:#ff6b9d">S</div>
+        <div class="av" style="background:#00c48c">A</div>
+        <div class="av" style="background:#f5a623">M</div>
+      </div>
+      <span>Join your peers on DoubtHub</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="fc fc1">
+      <div class="fc-tag">Physics</div>
+      <div class="fc-q">How does quantum entanglement work?</div>
+      <div class="fc-meta">Riya S. · 2 hrs ago</div>
+      <div class="fc-ans">✓ 4 answers</div>
+    </div>
+    <div class="fc fc2">
+      <div class="fc-tag">Mathematics</div>
+      <div class="fc-q">Integration by parts — quick notes</div>
+      <div class="fc-meta">Arjun M. · PDF uploaded</div>
+    </div>
+    <div class="fc fc3">
+      <div class="fc-tag">Study Match</div>
+      <div class="fc-q">Sahil wants to study with you!</div>
+      <div class="fc-meta">Common: Maths, Physics</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="sec-label">Platform Features</div>
+  <div class="feat-top">
+    <h2 class="sec-title">Everything you need to learn smarter</h2>
+    <button class="btn-filled" onclick="openModal('signup')">Explore all features →</button>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon" style="background:rgba(108,99,255,.15)">💬</div><div class="feat-title">Ask Your Doubts</div><div class="feat-desc">Post doubts with subject tags. Others answer and the community upvotes the best answers.</div></div>
+    <div class="feat-card"><div class="feat-icon" style="background:rgba(0,212,170,.12)">📄</div><div class="feat-title">Share Notes</div><div class="feat-desc">Upload handwritten notes, PDFs or text. Browse and download notes by subject for free.</div></div>
+    <div class="feat-card"><div class="feat-icon" style="background:rgba(255,107,157,.12)">🤝</div><div class="feat-title">Subject Matching</div><div class="feat-desc">Get matched with students who share your subjects. Send study requests like Instagram.</div></div>
+    <div class="feat-card"><div class="feat-icon" style="background:rgba(108,99,255,.15)">👥</div><div class="feat-title">Study Groups</div><div class="feat-desc">Create or join subject-specific groups. Chat in real time and solve problems together.</div></div>
+    <div class="feat-card"><div class="feat-icon" style="background:rgba(245,166,35,.12)">🤖</div><div class="feat-title">AI PDF Summary</div><div class="feat-desc">Upload any PDF and get an instant AI-powered summary and key points for quick revision.</div></div>
+    <div class="feat-card"><div class="feat-icon" style="background:rgba(0,212,170,.12)">🔔</div><div class="feat-title">Live Notifications</div><div class="feat-desc">Get notified when someone answers your doubt, accepts your match, or messages your group.</div></div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="sec-label">How it works</div>
+    <h2 class="sec-title">Up and running in 4 steps</h2>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div class="step-t">Sign Up</div><div class="step-d">Create your free account and pick your subjects</div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-t">Get Matched</div><div class="step-d">We find students with the same subjects as you</div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-t">Ask & Share</div><div class="step-d">Post doubts, upload notes, help others</div></div>
+      <div class="step"><div class="step-n">4</div><div class="step-t">Grow Together</div><div class="step-d">Join groups, chat live, ace your exams</div></div>
+    </div>
+    <div style="margin-top:3rem">
+      <button class="btn-hero" onclick="openModal('signup')" style="margin:0 auto">Join DoubtHub Now →</button>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band" id="about">
+  <h2>Stop studying alone.</h2>
+  <p>Join thousands of students who learn faster together on DoubtHub.</p>
+  <button class="btn-white" onclick="openModal('signup')">Create Free Account</button>
+</div>
+
+<footer>
+  <div class="f-logo"><span>⊕</span> DoubtHub</div>
+  <div class="f-links"><a href="#features">Features</a><a href="#how">How it works</a><a href="#">Privacy</a><a href="#">Contact</a></div>
+  <div class="f-copy">© 2025 DoubtHub. Built for students.</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="authModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>⊕ DoubtHub</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="mtab active" id="tab-login" onclick="switchTab('login')">Log In</button>
+      <button class="mtab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+    <div id="pane-login">
+      <div class="field"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="li-pw" placeholder="••••••••"></div>
+      <button class="btn-hero" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doLogin()">Log In →</button>
+    </div>
+    <div id="pane-signup" class="hidden">
+      <div class="field"><label>Full Name</label><input type="text" id="su-name" placeholder="Your name"></div>
+      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="su-pw" placeholder="Min. 6 characters"></div>
+      <div class="field">
+        <label>Subject Interests</label>
+        <div class="chips">
+          <span class="chip" onclick="this.classList.toggle('sel')">Mathematics</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Physics</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Chemistry</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Biology</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Computer Science</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">History</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Geography</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">English</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Economics</span>
+          <span class="chip" onclick="this.classList.toggle('sel')">Hindi</span>
+        </div>
+      </div>
+      <button class="btn-hero" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doSignup()">Create Account →</button>
+    </div>
+    <div id="modal-msg" class="msg"></div>
+  </div>
+</div>
+
+<script>
+function openModal(tab){document.getElementById('authModal').classList.add('open');switchTab(tab||'login')}
+function closeModal(){document.getElementById('authModal').classList.remove('open')}
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-signup').classList.toggle('active',t==='signup');
+  document.getElementById('pane-login').classList.toggle('hidden',t!=='login');
+  document.getElementById('pane-signup').classList.toggle('hidden',t!=='signup');
+  document.getElementById('modal-msg').className='msg';
+}
+function showMsg(m,t){const el=document.getElementById('modal-msg');el.textContent=m;el.className='msg '+(t||'err')}
+async function doLogin(){
+  const email=document.getElementById('li-email').value.trim();
+  const pw=document.getElementById('li-pw').value;
+  if(!email||!pw){showMsg('Please fill all fields');return}
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    const d=await r.json();
+    if(d.error){showMsg(d.error);return}
+    showMsg('Login successful! Redirecting...','ok');
+    setTimeout(()=>window.location.href='/dashboard',800);
+  }catch{showMsg('Make sure Flask server is running')}
+}
+async function doSignup(){
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pw=document.getElementById('su-pw').value;
+  const subjects=[...document.querySelectorAll('.chip.sel')].map(c=>c.textContent);
+  if(!name||!email||!pw){showMsg('Please fill all fields');return}
+  if(pw.length<6){showMsg('Password must be at least 6 characters');return}
+  try{
+    const r=await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pw,subjects})});
+    const d=await r.json();
+    if(d.error){showMsg(d.error);return}
+    showMsg('Account created! Redirecting...','ok');
+    setTimeout(()=>window.location.href='/dashboard',800);
+  }catch{showMsg('Make sure Flask server is running')}
+}
+</script>
+</body>
+</html>
 
