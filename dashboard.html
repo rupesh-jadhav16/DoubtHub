@@ -1,1 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoubtHub – Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{--bg:#0d0f14;--bg2:#141720;--bg3:#1c202c;--accent:#6c63ff;--a2:#ff6b9d;--a3:#00d4aa;--a4:#f5a623;--text:#e8eaf0;--text2:#8b8fa8;--border:#252836;--card:#181c27;--radius:14px}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+button{cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+input,textarea,select{font-family:'Plus Jakarta Sans',sans-serif}
+.hidden{display:none!important}
+.sidebar{width:240px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .3s}
+.s-logo{padding:1.3rem 1.5rem 1rem;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;display:flex;align-items:center;gap:.5rem}
+.s-logo span{color:var(--accent)}
+.s-nav{flex:1;padding:.9rem .75rem;display:flex;flex-direction:column;gap:.25rem;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.72rem 1rem;border-radius:12px;color:var(--text2);font-size:.88rem;cursor:pointer;transition:all .2s}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(108,99,255,.15);color:var(--accent);font-weight:600}
+.nav-item .ni{font-size:1rem;min-width:1.2rem;text-align:center}
+.s-user{padding:1rem 1.2rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.7rem}
+.u-av{width:34px;height:34px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0}
+.u-name{font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-role{color:var(--text2);font-size:.73rem}
+.logout-btn{background:transparent;color:var(--text2);font-size:1rem;padding:.3rem;border-radius:6px;margin-left:auto}
+.logout-btn:hover{color:var(--a2)}
+.topbar{position:fixed;top:0;left:240px;right:0;height:58px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;z-index:90}
+.menu-toggle{display:none;background:transparent;color:var(--text);font-size:1.3rem}
+.topbar-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;flex:1}
+.online-pill{display:flex;align-items:center;gap:.4rem;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.2);border-radius:20px;padding:.3rem .8rem;font-size:.75rem;color:var(--a3)}
+.online-dot{width:6px;height:6px;background:var(--a3);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.notif-bell{position:relative;width:34px;height:34px;background:var(--bg3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer;transition:background .2s}
+.notif-bell:hover{background:var(--border)}
+.n-badge{position:absolute;top:-3px;right:-3px;background:var(--a2);color:#fff;font-size:.6rem;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.notif-panel{position:fixed;top:62px;right:1rem;width:340px;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:200;max-height:420px;overflow-y:auto}
+.np-head{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem}
+.np-head button{background:transparent;color:var(--accent);font-size:.8rem}
+.n-item{padding:.85rem 1.25rem;border-bottom:1px solid var(--border);font-size:.83rem;display:flex;gap:.7rem;align-items:flex-start}
+.n-item.unread{background:rgba(108,99,255,.06)}
+.n-time{color:var(--text2);font-size:.72rem;margin-top:.2rem}
+.main-content{margin-left:240px;margin-top:58px;padding:1.75rem;min-height:calc(100vh - 58px);flex:1}
+.section{display:none}
+.section.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.welcome-banner{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.75rem 2rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.wb-orb1{position:absolute;top:-50px;right:-50px;width:220px;height:220px;background:rgba(108,99,255,.07);border-radius:50%}
+.wb-orb2{position:absolute;bottom:-40px;left:35%;width:180px;height:180px;background:rgba(0,212,170,.05);border-radius:50%}
+.wb-left{position:relative;z-index:1}
+.wb-hello{font-size:.8rem;color:var(--text2);margin-bottom:.3rem;letter-spacing:.3px}
+.wb-title{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;line-height:1.2;margin-bottom:.5rem}
+.wb-title span{color:var(--accent)}
+.wb-sub{color:var(--text2);font-size:.85rem;margin-bottom:1.2rem;max-width:400px;line-height:1.6}
+.wb-btns{display:flex;gap:.75rem;flex-wrap:wrap}
+.wb-btn{padding:.6rem 1.2rem;border-radius:10px;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+.wb-btn.primary{background:var(--accent);color:#fff}
+.wb-btn.primary:hover{background:#5a52e0;transform:translateY(-1px)}
+.wb-btn.ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.wb-btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.wb-right{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-end;gap:.75rem}
+.clock-card{background:rgba(108,99,255,.1);border:1px solid rgba(108,99,255,.2);border-radius:14px;padding:.85rem 1.2rem;text-align:center;min-width:140px}
+.clock-time{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--accent);line-height:1;letter-spacing:1px}
+.clock-date{font-size:.72rem;color:var(--text2);margin-top:.3rem}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-card{border-radius:16px;padding:1.2rem 1.3rem;cursor:pointer;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;gap:.4rem}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.sc-violet{background:#6c63ff}
+.sc-rose{background:#ff6b9d}
+.sc-teal{background:#00c48c}
+.sc-amber{background:#f5a623}
+.sc-icon{font-size:1.4rem}
+.sc-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#fff;line-height:1}
+.sc-label{font-size:.78rem;color:rgba(255,255,255,.85);font-weight:500}
+.sc-hint{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:.1rem}
+.qa-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.85rem;margin-bottom:1.5rem}
+.qa-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem .75rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.qa-card:hover{border-color:var(--accent);background:#1e2235;transform:translateY(-2px)}
+.qa-icon{font-size:1.4rem}
+.qa-label{font-size:.75rem;color:var(--text2);font-weight:500;line-height:1.3}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem}
+.panel-link{font-size:.78rem;color:var(--accent);cursor:pointer}
+.panel-link:hover{text-decoration:underline}
+.doubt-row{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.doubt-row:last-child{border-bottom:none;padding-bottom:0}
+.dr-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;color:#fff}
+.dr-title{font-size:.83rem;font-weight:500;margin-bottom:.25rem;line-height:1.4;color:var(--text)}
+.dr-meta{font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.dr-tag{display:inline-block;padding:.15rem .5rem;background:rgba(108,99,255,.15);color:var(--accent);border-radius:20px;font-size:.68rem;font-weight:600}
+.match-row{display:flex;align-items:center;gap:.75rem;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.match-row:last-child{border-bottom:none;padding-bottom:0}
+.mr-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;color:#fff}
+.mr-name{font-size:.85rem;font-weight:600}
+.mr-subs{font-size:.73rem;color:var(--text2)}
+.mr-btn{margin-left:auto;padding:.38rem .85rem;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s}
+.mr-btn:hover{background:#5a52e0}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.sec-head h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700}
+.filter-bar{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-bar input,.filter-bar select{padding:.6rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.85rem;flex:1;min-width:150px;outline:none}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--accent)}
+select option{background:var(--bg2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:all .2s;cursor:pointer}
+.card:hover{background:#1e2235;border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(108,99,255,.15)}
+.c-subject{display:inline-block;padding:.25rem .7rem;background:rgba(108,99,255,.15);color:var(--accent);border-radius:20px;font-size:.75rem;font-weight:600;margin-bottom:.6rem}
+.c-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.5rem;line-height:1.4}
+.c-desc{color:var(--text2);font-size:.83rem;line-height:1.6;margin-bottom:.8rem;overflow:hidden;max-height:2.8rem;display:block}
+.c-meta{display:flex;align-items:center;justify-content:space-between;color:var(--text2);font-size:.78rem;flex-wrap:wrap;gap:.5rem}
+.c-author{display:flex;align-items:center;gap:.4rem}
+.mini-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;color:#fff}
+.btn-primary{padding:.6rem 1.3rem;background:var(--accent);color:#fff;border-radius:10px;font-size:.85rem;font-weight:600;transition:all .2s}
+.btn-primary:hover{background:#5a52e0;transform:translateY(-1px)}
+.btn-secondary{padding:.52rem 1rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:.82rem;transition:all .2s}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.inner-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.itab{padding:.52rem 1.1rem;border-radius:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:.85rem;transition:all .2s}
+.itab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.ipanel{display:none}
+.ipanel.active{display:block}
+.match-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.mc-head{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.mc-av{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--a2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;color:#fff}
+.mc-name{font-weight:600;font-size:.95rem}
+.mc-common{color:var(--text2);font-size:.78rem;margin-top:.1rem}
+.mc-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.9rem}
+.mc-tag{padding:.2rem .6rem;background:var(--bg3);border-radius:20px;font-size:.73rem;color:var(--text2)}
+.mc-actions{display:flex;gap:.5rem}
+.mc-actions button{flex:1;padding:.52rem;border-radius:8px;font-size:.82rem;font-weight:600;transition:all .2s}
+.btn-send{background:var(--accent);color:#fff}
+.btn-send:hover{background:#5a52e0}
+.btn-accept{background:var(--a3);color:#000}
+.btn-reject{background:var(--bg3);border:1px solid var(--border);color:var(--text2)}
+.group-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.g-tag{display:inline-block;padding:.25rem .7rem;background:rgba(0,212,170,.12);color:var(--a3);border-radius:20px;font-size:.75rem;font-weight:600;margin-bottom:.5rem}
+.g-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.g-desc{color:var(--text2);font-size:.82rem;margin-bottom:.6rem}
+.g-meta{color:var(--text2);font-size:.78rem;margin-bottom:.8rem}
+.g-actions{display:flex;gap:.5rem}
+.chat-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;height:70vh;margin-top:1rem}
+.chat-head{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-weight:600}
+.chat-head button{background:transparent;color:var(--text2);font-size:.9rem}
+.chat-msgs{flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:.75rem}
+.chat-msg{max-width:75%;padding:.7rem 1rem;border-radius:14px;font-size:.88rem;line-height:1.5}
+.chat-msg.me{background:var(--accent);align-self:flex-end;border-bottom-right-radius:4px}
+.chat-msg.other{background:var(--bg3);align-self:flex-start;border-bottom-left-radius:4px}
+.msg-author{font-size:.72rem;opacity:.7;margin-bottom:.2rem}
+.chat-input-bar{display:flex;gap:.75rem;padding:1rem 1.25rem;border-top:1px solid var(--border)}
+.chat-input-bar input{flex:1;padding:.7rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;outline:none}
+.chat-input-bar input:focus{border-color:var(--accent)}
+.chat-input-bar button{padding:.7rem 1.5rem;background:var(--accent);color:#fff;border-radius:10px;font-weight:600;font-size:.88rem}
+.pdf-box{max-width:700px}
+.upload-zone{border:2px dashed var(--border);border-radius:16px;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover{border-color:var(--accent);background:rgba(108,99,255,.05)}
+.upload-zone p{font-weight:500;margin-bottom:.4rem}
+.upload-zone span{color:var(--text2);font-size:.82rem}
+.pdf-result{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-top:1.5rem}
+.pdf-rhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;font-weight:600}
+.pdf-rhead button{background:transparent;color:var(--text2);font-size:.85rem}
+.spinner{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-sec{margin-bottom:1.5rem}
+.ai-sec h3{font-family:'Syne',sans-serif;font-weight:600;margin-bottom:.75rem}
+#aiSummary{color:var(--text);line-height:1.7;font-size:.9rem}
+#aiKeyPoints{padding-left:1.2rem}
+#aiKeyPoints li{color:var(--text);line-height:1.7;font-size:.9rem;margin-bottom:.4rem}
+.note-preview{background:var(--bg3);border-radius:8px;padding:.75rem;font-size:.82rem;color:var(--text2);margin:.5rem 0;max-height:80px;overflow:hidden;line-height:1.5}
+.file-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;background:rgba(255,107,157,.12);color:var(--a2);border-radius:6px;font-size:.75rem;margin:.3rem 0}
+.answer-card{background:var(--bg3);border-radius:12px;padding:1rem;margin-bottom:.75rem}
+.ans-author{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;font-size:.82rem;color:var(--text2)}
+.ans-content{font-size:.9rem;line-height:1.6;margin-bottom:.7rem}
+.ans-reacts{display:flex;gap:.5rem}
+.react-btn{padding:.3rem .7rem;border-radius:20px;background:var(--bg);border:1px solid var(--border);color:var(--text2);font-size:.8rem;transition:all .2s;display:flex;align-items:center;gap:.3rem}
+.react-btn.up:hover{border-color:var(--a3);color:var(--a3)}
+.react-btn.down:hover{border-color:var(--a2);color:var(--a2)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal.wide{max-width:700px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.modal-head h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700}
+.modal-head button{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:30px;height:30px;border-radius:8px;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.82rem;font-weight:500;color:var(--text2);margin-bottom:.4rem}
+.field input,.field select,.field textarea{width:100%;padding:.7rem 1rem;background:var(--bg3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;outline:none;transition:border .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{min-height:100px;resize:vertical}
+.doubt-meta-view{color:var(--text2);font-size:.83rem;margin-bottom:.75rem;display:flex;gap:1rem;flex-wrap:wrap}
+.doubt-desc-view{color:var(--text);line-height:1.7;margin-bottom:1rem}
+hr{border:none;border-top:1px solid var(--border);margin:1rem 0}
+h4{font-family:'Syne',sans-serif;font-weight:600;margin-bottom:.75rem}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:999;font-size:.88rem;font-weight:500;animation:slideUp .3s ease}
+.toast.success{border-left:3px solid var(--a3)}
+.toast.error{border-left:3px solid var(--a2)}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.empty{text-align:center;color:var(--text2);padding:3rem;grid-column:1/-1}
+.empty-icon{font-size:3rem;margin-bottom:1rem}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.topbar{left:0}.main-content{margin-left:0}.menu-toggle{display:block}.stat-row{grid-template-columns:repeat(2,1fr)}.qa-row{grid-template-columns:repeat(3,1fr)}.two-col{grid-template-columns:1fr}}
+@media(max-width:500px){.main-content{padding:1rem}.grid{grid-template-columns:1fr}.stat-row{grid-template-columns:repeat(2,1fr)}.qa-row{grid-template-columns:repeat(2,1fr)}.welcome-banner{flex-direction:column;gap:1rem}.wb-right{align-items:flex-start;width:100%}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="s-logo"><span>⊕</span> DoubtHub</div>
+  <nav class="s-nav">
+    <div class="nav-item active" onclick="showSection('home')" data-s="home"><span class="ni">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="showSection('doubts')" data-s="doubts"><span class="ni">💬</span> Ask a Doubt</div>
+    <div class="nav-item" onclick="showSection('notes')" data-s="notes"><span class="ni">📄</span> Notes</div>
+    <div class="nav-item" onclick="showSection('match')" data-s="match"><span class="ni">🤝</span> Find Buddies</div>
+    <div class="nav-item" onclick="showSection('groups')" data-s="groups"><span class="ni">👥</span> Study Groups</div>
+    <div class="nav-item" onclick="showSection('pdfai')" data-s="pdfai"><span class="ni">🤖</span> AI Summary</div>
+  </nav>
+  <div class="s-user">
+    <div class="u-av" id="userAv">...</div>
+    <div style="flex:1;min-width:0"><div class="u-name" id="userName">Loading...</div><div class="u-role">Student</div></div>
+    <button class="logout-btn" onclick="doLogout()" title="Logout">⎋</button>
+  </div>
+</aside>
+
+<div class="topbar">
+  <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+  <div class="topbar-title" id="topbarTitle">Dashboard</div>
+  <div class="notif-bell" onclick="toggleNotif()">🔔<span class="n-badge hidden" id="nBadge">0</span></div>
+</div>
+
+<div class="notif-panel hidden" id="notifPanel">
+  <div class="np-head"><span>Notifications</span><button onclick="markRead()">Mark all read</button></div>
+  <div id="notifList"><div class="empty" style="padding:1.5rem">No notifications</div></div>
+</div>
+
+<main class="main-content">
+
+  <!-- HOME -->
+  <section id="section-home" class="section active">
+    <div class="welcome-banner">
+      <div class="wb-orb1"></div><div class="wb-orb2"></div>
+      <div class="wb-left">
+        <div class="wb-hello" id="wb-greeting">👋 Welcome</div>
+        <div class="wb-title">Welcome back, <span id="wb-name">...</span>!</div>
+        <div class="wb-sub">Your peers are waiting to help. Ready to learn something new today?</div>
+        <div class="wb-btns">
+          <button class="wb-btn primary" onclick="showSection('doubts')">💬 Ask a Doubt</button>
+          <button class="wb-btn ghost" onclick="showSection('notes')">📄 Share Notes</button>
+        </div>
+      </div>
+      <div class="wb-right">
+        <div class="clock-card">
+          <div class="clock-time" id="liveTime">--:--</div>
+          <div class="clock-date" id="liveDate">Loading...</div>
+        </div>
+        <div style="font-size:.75rem;color:var(--text2);text-align:right">Stay focused! 💪</div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card sc-violet" onclick="showSection('doubts')">
+        <div class="sc-icon">💬</div>
+        <div class="sc-num" id="stat-doubts">-</div>
+        <div class="sc-label">My Doubts</div>
+        <div class="sc-hint">View all →</div>
+      </div>
+      <div class="stat-card sc-rose" onclick="showSection('notes')">
+        <div class="sc-icon">📄</div>
+        <div class="sc-num" id="stat-notes">-</div>
+        <div class="sc-label">Shared Notes</div>
+        <div class="sc-hint">View all →</div>
+      </div>
+      <div class="stat-card sc-teal" onclick="showSection('groups')">
+        <div class="sc-icon">👥</div>
+        <div class="sc-num" id="stat-groups">-</div>
+        <div class="sc-label">Study Groups</div>
+        <div class="sc-hint">View all →</div>
+      </div>
+      <div class="stat-card sc-amber" onclick="showSection('match')">
+        <div class="sc-icon">🤝</div>
+        <div class="sc-num" id="stat-buddies">-</div>
+        <div class="sc-label">Suggestions</div>
+        <div class="sc-hint">View all →</div>
+      </div>
+    </div>
+
+    <div class="qa-row">
+      <div class="qa-card" onclick="openM('askDoubt')"><div class="qa-icon">❓</div><div class="qa-label">Post Doubt</div></div>
+      <div class="qa-card" onclick="openM('shareNote')"><div class="qa-icon">📤</div><div class="qa-label">Share Note</div></div>
+      <div class="qa-card" onclick="openM('createGroup')"><div class="qa-icon">➕</div><div class="qa-label">New Group</div></div>
+      <div class="qa-card" onclick="showSection('pdfai')"><div class="qa-icon">🤖</div><div class="qa-label">AI Summary</div></div>
+      <div class="qa-card" onclick="showSection('match')"><div class="qa-icon">🔍</div><div class="qa-label">Find Buddies</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Recent Doubts 💬</div>
+          <div class="panel-link" onclick="showSection('doubts')">See all →</div>
+        </div>
+        <div id="homeDoubtsList"><div style="color:var(--text2);font-size:.85rem;padding:.5rem 0">Loading...</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Buddy Suggestions 🤝</div>
+          <div class="panel-link" onclick="showSection('match')">See all →</div>
+        </div>
+        <div id="homeSuggList"><div style="color:var(--text2);font-size:.85rem;padding:.5rem 0">Loading...</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOUBTS -->
+  <section id="section-doubts" class="section">
+    <div class="sec-head">
+      <h2>Ask Your Doubt 💬</h2>
+      <button class="btn-primary" onclick="openM('askDoubt')">+ Post Doubt</button>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="dSearch" placeholder="🔍 Search doubts..." oninput="loadDoubts()">
+      <select id="dSubject" onchange="loadDoubts()"><option value="">All Subjects</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Computer Science</option><option>History</option><option>Geography</option><option>English</option><option>Economics</option><option>Hindi</option></select>
+    </div>
+    <div id="doubtsList" class="grid"></div>
+  </section>
+
+  <!-- NOTES -->
+  <section id="section-notes" class="section">
+    <div class="sec-head">
+      <h2>Notes Sharing 📄</h2>
+      <button class="btn-primary" onclick="openM('shareNote')">+ Share Note</button>
+    </div>
+    <div class="filter-bar">
+      <select id="nSubject" onchange="loadNotes()"><option value="">All Subjects</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Computer Science</option><option>History</option><option>Geography</option><option>English</option><option>Economics</option><option>Hindi</option></select>
+    </div>
+    <div id="notesList" class="grid"></div>
+  </section>
+
+  <!-- MATCH -->
+  <section id="section-match" class="section">
+    <div class="sec-head"><h2>Find Study Buddies 🤝</h2></div>
+    <div class="inner-tabs">
+      <button class="itab active" onclick="switchItab('suggestions','match',this)">Suggestions</button>
+      <button class="itab" onclick="switchItab('pending','match',this)">Pending Requests</button>
+    </div>
+    <div id="suggestions" class="ipanel active"><div id="suggList" class="grid"></div></div>
+    <div id="pending" class="ipanel"><div id="reqList" class="grid"></div></div>
+  </section>
+
+  <!-- GROUPS -->
+  <section id="section-groups" class="section">
+    <div class="sec-head" id="groupsHead">
+      <h2>Study Groups 👥</h2>
+      <button class="btn-primary" onclick="openM('createGroup')">+ Create Group</button>
+    </div>
+    <div id="groupsList" class="grid"></div>
+    <div id="chatPanel" class="chat-panel hidden">
+      <div class="chat-head"><button onclick="closeChat()">← Back</button><span id="chatName"></span></div>
+      <div id="chatMsgs" class="chat-msgs"></div>
+      <div class="chat-input-bar">
+        <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()">Send ➤</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PDF AI -->
+  <section id="section-pdfai" class="section">
+    <div class="sec-head"><h2>AI PDF Summarizer 🤖</h2></div>
+    <div class="pdf-box">
+      <div class="upload-zone" onclick="document.getElementById('pdfInput').click()">
+        <div style="font-size:3rem;margin-bottom:1rem">📄</div>
+        <p>Click or drag & drop your PDF here</p>
+        <span>Supports .pdf files up to 10MB</span>
+        <input type="file" id="pdfInput" accept=".pdf" hidden onchange="handlePdf(event)">
+      </div>
+      <div id="pdfResult" class="pdf-result hidden">
+        <div class="pdf-rhead"><span id="pdfName"></span><button onclick="resetPdf()">✕ Clear</button></div>
+        <div id="aiLoading" class="hidden" style="display:flex;align-items:center;gap:1rem;padding:.5rem 0"><div class="spinner"></div><p>AI is analyzing your PDF...</p></div>
+        <div id="aiOut" class="hidden">
+          <div class="ai-sec"><h3>📝 Summary</h3><div id="aiSummary"></div></div>
+          <div class="ai-sec"><h3>🔑 Key Points</h3><ul id="aiKeyPoints"></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODALS -->
+<div class="modal-overlay hidden" id="askDoubt">
+  <div class="modal">
+    <div class="modal-head"><h3>Post a Doubt 💬</h3><button onclick="closeM('askDoubt')">✕</button></div>
+    <div class="field"><label>Title</label><input type="text" id="dTitle" placeholder="What's your doubt?"></div>
+    <div class="field"><label>Description</label><textarea id="dDesc" placeholder="Describe in detail..."></textarea></div>
+    <div class="field"><label>Subject</label><select id="dSub"><option value="">Select subject</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Computer Science</option><option>History</option><option>Geography</option><option>English</option><option>Economics</option><option>Hindi</option></select></div>
+    <button class="btn-primary" style="width:100%;padding:.75rem;margin-top:.5rem" onclick="postDoubt()">Post Doubt 🚀</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="viewDoubt">
+  <div class="modal wide">
+    <div class="modal-head"><h3 id="vdTitle"></h3><button onclick="closeM('viewDoubt')">✕</button></div>
+    <div class="doubt-meta-view" id="vdMeta"></div>
+    <p class="doubt-desc-view" id="vdDesc"></p>
+    <hr>
+    <h4>Answers</h4>
+    <div id="ansList"></div>
+    <div class="field" style="margin-top:1rem"><textarea id="ansInput" placeholder="Write your answer..."></textarea></div>
+    <button class="btn-primary" style="width:100%;padding:.75rem;margin-top:.5rem" onclick="postAnswer()">Submit Answer ✅</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="shareNote">
+  <div class="modal">
+    <div class="modal-head"><h3>Share a Note 📄</h3><button onclick="closeM('shareNote')">✕</button></div>
+    <div class="field"><label>Title</label><input type="text" id="nTitle" placeholder="Note title"></div>
+    <div class="field"><label>Description</label><input type="text" id="nDesc" placeholder="Short description"></div>
+    <div class="field"><label>Subject</label><select id="nSub"><option value="">Select subject</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Computer Science</option><option>History</option><option>Geography</option><option>English</option><option>Economics</option><option>Hindi</option></select></div>
+    <div class="field"><label>Upload File (PDF / Image)</label><input type="file" id="nFile" accept=".pdf,.png,.jpg,.jpeg"></div>
+    <div class="field"><label>Or paste text content</label><textarea id="nContent" placeholder="Paste note content..."></textarea></div>
+    <button class="btn-primary" style="width:100%;padding:.75rem;margin-top:.5rem" onclick="shareNote()">Share Note 📤</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="createGroup">
+  <div class="modal">
+    <div class="modal-head"><h3>Create Study Group 👥</h3><button onclick="closeM('createGroup')">✕</button></div>
+    <div class="field"><label>Group Name</label><input type="text" id="gName" placeholder="e.g. JEE Physics Warriors"></div>
+    <div class="field"><label>Subject</label><select id="gSub"><option value="">Select subject</option><option>Mathematics</option><option>Physics</option><option>Chemistry</option><option>Biology</option><option>Computer Science</option><option>History</option><option>Geography</option><option>English</option><option>Economics</option><option>Hindi</option></select></div>
+    <div class="field"><label>Description</label><textarea id="gDesc" placeholder="What's this group about?"></textarea></div>
+    <button class="btn-primary" style="width:100%;padding:.75rem;margin-top:.5rem" onclick="createGroup()">Create Group 🚀</button>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+let me=null, activeDoubt=null, activeGroup=null, chatTimer=null;
+
+const COLORS=['#6c63ff','#ff6b9d','#00c48c','#f5a623','#378add','#d85a30'];
+function ac(name){return COLORS[name.charCodeAt(0)%COLORS.length];}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function timeAgo(d){
+  const m=Math.floor((Date.now()-new Date(d))/60000);
+  if(m<1)return'just now';if(m<60)return m+'m ago';
+  if(m<1440)return Math.floor(m/60)+'h ago';return Math.floor(m/1440)+'d ago';
+}
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type;t.classList.remove('hidden');
+  setTimeout(()=>t.classList.add('hidden'),3000);
+}
+function openM(id){document.getElementById(id).classList.remove('hidden');}
+function closeM(id){document.getElementById(id).classList.add('hidden');}
+function doLogout(){fetch('/api/logout',{method:'POST'}).then(()=>window.location.href='/');}
+
+// LIVE CLOCK — updates every second, fully real time
+function updateClock(){
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,'0');
+  const mn=String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('liveTime').textContent=h+':'+mn;
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('liveDate').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()];
+}
+updateClock();
+setInterval(updateClock,1000);
+
+// INIT — fetch real user from session
+document.addEventListener('DOMContentLoaded',async()=>{
+  const r=await fetch('/api/me');
+  if(!r.ok){window.location.href='/';return;}
+  me=await r.json();
+
+  // Set name everywhere from real login session
+  const name=me.name;
+  document.getElementById('userName').textContent=name;
+  document.getElementById('userAv').textContent=name[0].toUpperCase();
+  document.getElementById('wb-name').textContent=name;
+
+  // Real time greeting based on current hour
+  const h=new Date().getHours();
+  document.getElementById('wb-greeting').textContent=
+    h<12?'☀️ Good morning':h<17?'🌤️ Good afternoon':'🌙 Good evening';
+
+  loadHomeDashboard();
+  pollNotif();
+  setInterval(pollNotif,30000);
+});
+
+const titles={home:'Dashboard',doubts:'Ask a Doubt 💬',notes:'Notes 📄',match:'Find Buddies 🤝',groups:'Study Groups 👥',pdfai:'AI PDF Summarizer 🤖'};
+
+function showSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-s="${name}"]`).classList.add('active');
+  document.getElementById('topbarTitle').textContent=titles[name];
+  document.getElementById('sidebar').classList.remove('open');
+  if(name==='doubts')loadDoubts();
+  if(name==='notes')loadNotes();
+  if(name==='match'){loadSugg();loadReqs();}
+  if(name==='groups')loadGroups();
+}
+
+function switchItab(panel,sec,btn){
+  document.getElementById('section-'+sec).querySelectorAll('.itab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('section-'+sec).querySelectorAll('.ipanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(panel).classList.add('active');
+}
+
+// HOME DASHBOARD — all counts from real API
+async function loadHomeDashboard(){
+  try{
+    const[dr,nr,gr,sr]=await Promise.all([
+      fetch('/api/doubts').then(r=>r.json()),
+      fetch('/api/notes').then(r=>r.json()),
+      fetch('/api/groups').then(r=>r.json()),
+      fetch('/api/match/suggestions').then(r=>r.json())
+    ]);
+    document.getElementById('stat-doubts').textContent=dr.filter(d=>d.user_id===me.id).length;
+    document.getElementById('stat-notes').textContent=nr.filter(n=>n.user_id===me.id).length;
+    document.getElementById('stat-groups').textContent=gr.length;
+    document.getElementById('stat-buddies').textContent=sr.length;
+
+    const dl=document.getElementById('homeDoubtsList');
+    const recent=dr.slice(0,3);
+    if(!recent.length){dl.innerHTML='<div style="color:var(--text2);font-size:.83rem;padding:.5rem 0">No doubts yet. Post the first one!</div>';}
+    else{
+      dl.innerHTML=recent.map(d=>`
+        <div class="doubt-row" onclick="viewDoubt(${d.id})" style="cursor:pointer">
+          <div class="dr-av" style="background:${ac(d.author_name)}">${d.author_name[0].toUpperCase()}</div>
+          <div>
+            <div class="dr-title">${esc(d.title)}</div>
+            <div class="dr-meta"><span class="dr-tag">${esc(d.subject)}</span>${esc(d.author_name)} · ${timeAgo(d.created_at)} · ${d.answer_count} ans</div>
+          </div>
+        </div>`).join('');
+    }
+
+    const sl=document.getElementById('homeSuggList');
+    if(!sr.length){sl.innerHTML='<div style="color:var(--text2);font-size:.83rem;padding:.5rem 0">No suggestions yet. Add more subject interests!</div>';}
+    else{
+      sl.innerHTML=sr.slice(0,3).map(u=>`
+        <div class="match-row">
+          <div class="mr-av" style="background:${ac(u.name)}">${u.name[0].toUpperCase()}</div>
+          <div><div class="mr-name">${esc(u.name)}</div><div class="mr-subs">${u.common.join(', ')} in common</div></div>
+          <button class="mr-btn" id="hbtn${u.id}" onclick="sendReqHome(${u.id})">+ Connect</button>
+        </div>`).join('');
+    }
+  }catch(e){console.error('Dashboard load error:',e);}
+}
+
+// DOUBTS
+async function loadDoubts(){
+  const sub=document.getElementById('dSubject').value;
+  const search=document.getElementById('dSearch').value;
+  const r=await fetch(`/api/doubts?subject=${encodeURIComponent(sub)}&search=${encodeURIComponent(search)}`);
+  const doubts=await r.json();
+  const c=document.getElementById('doubtsList');
+  if(!doubts.length){c.innerHTML='<div class="empty"><div class="empty-icon">💬</div><p>No doubts yet. Be the first to ask!</p></div>';return;}
+  c.innerHTML=doubts.map(d=>`
+    <div class="card" onclick="viewDoubt(${d.id})">
+      <span class="c-subject">${esc(d.subject)}</span>
+      <div class="c-title">${esc(d.title)}</div>
+      <div class="c-desc">${esc(d.description)}</div>
+      <div class="c-meta">
+        <span class="c-author"><span class="mini-av" style="background:${ac(d.author_name)}">${d.author_name[0].toUpperCase()}</span>${esc(d.author_name)}</span>
+        <span>💬 ${d.answer_count} · ${timeAgo(d.created_at)}</span>
+      </div>
+    </div>`).join('');
+}
+
+async function viewDoubt(id){
+  activeDoubt=id;
+  const r=await fetch(`/api/doubts/${id}`);
+  const{doubt,answers}=await r.json();
+  document.getElementById('vdTitle').textContent=doubt.title;
+  document.getElementById('vdMeta').innerHTML=`<span>📚 ${esc(doubt.subject)}</span><span>👤 ${esc(doubt.author_name)}</span><span>${timeAgo(doubt.created_at)}</span>`;
+  document.getElementById('vdDesc').textContent=doubt.description;
+  renderAnswers(answers);
+  openM('viewDoubt');
+}
+
+function renderAnswers(answers){
+  const c=document.getElementById('ansList');
+  if(!answers.length){c.innerHTML='<p style="color:var(--text2);font-size:.85rem">No answers yet. Be the first!</p>';return;}
+  c.innerHTML=answers.map(a=>`
+    <div class="answer-card" id="a${a.id}">
+      <div class="ans-author"><span class="mini-av" style="background:${ac(a.author_name)}">${a.author_name[0].toUpperCase()}</span><strong>${esc(a.author_name)}</strong> · ${timeAgo(a.created_at)}</div>
+      <div class="ans-content">${esc(a.content)}</div>
+      <div class="ans-reacts">
+        <button class="react-btn up" onclick="reactAns(${a.id},'up')">👍 <span id="up${a.id}">${a.upvotes}</span></button>
+        <button class="react-btn down" onclick="reactAns(${a.id},'down')">👎 <span id="dn${a.id}">${a.downvotes}</span></button>
+      </div>
+    </div>`).join('');
+}
+
+async function postDoubt(){
+  const title=document.getElementById('dTitle').value.trim();
+  const desc=document.getElementById('dDesc').value.trim();
+  const subject=document.getElementById('dSub').value;
+  if(!title||!desc||!subject){toast('Please fill all fields','error');return;}
+  const r=await fetch('/api/doubts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,description:desc,subject})});
+  const d=await r.json();
+  if(d.error){toast(d.error,'error');return;}
+  document.getElementById('dTitle').value='';document.getElementById('dDesc').value='';document.getElementById('dSub').value='';
+  closeM('askDoubt');toast('Doubt posted! 🚀');loadDoubts();loadHomeDashboard();
+}
+
+async function postAnswer(){
+  const content=document.getElementById('ansInput').value.trim();
+  if(!content){toast('Write your answer first','error');return;}
+  const r=await fetch(`/api/doubts/${activeDoubt}/answers`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content})});
+  const d=await r.json();
+  if(d.error){toast(d.error,'error');return;}
+  document.getElementById('ansInput').value='';
+  toast('Answer posted! ✅');
+  const r2=await fetch(`/api/doubts/${activeDoubt}`);
+  const{answers}=await r2.json();
+  renderAnswers(answers);loadDoubts();
+}
+
+async function reactAns(id,reaction){
+  const r=await fetch(`/api/answers/${id}/react`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reaction})});
+  const d=await r.json();
+  document.getElementById('up'+id).textContent=d.upvotes;
+  document.getElementById('dn'+id).textContent=d.downvotes;
+}
+
+// NOTES
+async function loadNotes(){
+  const sub=document.getElementById('nSubject').value;
+  const r=await fetch(`/api/notes?subject=${encodeURIComponent(sub)}`);
+  const notes=await r.json();
+  const c=document.getElementById('notesList');
+  if(!notes.length){c.innerHTML='<div class="empty"><div class="empty-icon">📄</div><p>No notes yet. Share yours!</p></div>';return;}
+  c.innerHTML=notes.map(n=>`
+    <div class="card">
+      <span class="c-subject">${esc(n.subject)}</span>
+      <div class="c-title">${esc(n.title)}</div>
+      ${n.description?`<div class="c-desc">${esc(n.description)}</div>`:''}
+      ${n.file_name?`<div class="file-badge">📎 ${esc(n.file_name)}</div>`:''}
+      ${n.content?`<div class="note-preview">${esc(n.content)}</div>`:''}
+      <div class="c-meta" style="margin-top:.5rem">
+        <span class="c-author"><span class="mini-av" style="background:${ac(n.author_name)}">${n.author_name[0].toUpperCase()}</span>${esc(n.author_name)}</span>
+        <span>⬇️ ${n.downloads} · ${timeAgo(n.created_at)}</span>
+      </div>
+      ${n.file_path?`<div style="margin-top:.75rem"><a href="/${n.file_path}" target="_blank" onclick="trackDl(${n.id})" class="btn-secondary" style="padding:.45rem .9rem;font-size:.8rem;border-radius:8px;display:inline-block;text-decoration:none;color:var(--text)">📥 Download</a></div>`:''}
+    </div>`).join('');
+}
+
+async function shareNote(){
+  const title=document.getElementById('nTitle').value.trim();
+  const subject=document.getElementById('nSub').value;
+  const desc=document.getElementById('nDesc').value.trim();
+  const content=document.getElementById('nContent').value.trim();
+  const fileInput=document.getElementById('nFile');
+  if(!title||!subject){toast('Title and subject required','error');return;}
+  const fd=new FormData();
+  fd.append('title',title);fd.append('subject',subject);fd.append('description',desc);fd.append('content',content);
+  if(fileInput.files[0])fd.append('file',fileInput.files[0]);
+  const r=await fetch('/api/notes',{method:'POST',body:fd});
+  const d=await r.json();
+  if(d.error){toast(d.error,'error');return;}
+  document.getElementById('nTitle').value='';document.getElementById('nSub').value='';
+  document.getElementById('nDesc').value='';document.getElementById('nContent').value='';document.getElementById('nFile').value='';
+  closeM('shareNote');toast('Note shared! 📄');loadNotes();loadHomeDashboard();
+}
+
+async function trackDl(id){await fetch(`/api/notes/${id}/download`,{method:'POST'});}
+
+// MATCHING
+async function loadSugg(){
+  const r=await fetch('/api/match/suggestions');
+  const suggs=await r.json();
+  const c=document.getElementById('suggList');
+  if(!suggs.length){c.innerHTML='<div class="empty"><div class="empty-icon">🤝</div><p>No suggestions. Add more subject interests!</p></div>';return;}
+  c.innerHTML=suggs.map(u=>`
+    <div class="match-card">
+      <div class="mc-head"><div class="mc-av" style="background:${ac(u.name)}">${u.name[0].toUpperCase()}</div><div><div class="mc-name">${esc(u.name)}</div><div class="mc-common">🔗 ${u.common.join(', ')} in common</div></div></div>
+      <div class="mc-tags">${u.subjects.map(s=>`<span class="mc-tag">${s}</span>`).join('')}</div>
+      <div class="mc-actions"><button class="btn-send" onclick="sendReq(${u.id},this)">🤝 Send Request</button></div>
+    </div>`).join('');
+}
+
+async function sendReqHome(id){
+  const btn=document.getElementById('hbtn'+id);
+  btn.textContent='Sending...';
+  btn.disabled=true;
+  try{
+    const r=await fetch('/api/match/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({receiver_id:id})});
+    const d=await r.json();
+    if(d.error){
+      btn.textContent='+ Connect';
+      btn.disabled=false;
+      toast(d.error,'error');
+    }else{
+      btn.textContent='✓ Request Sent';
+      btn.style.background='#00c48c';
+      btn.style.color='#000';
+    }
+  }catch(e){
+    btn.textContent='+ Connect';
+    btn.disabled=false;
+    toast('Something went wrong','error');
+  }
+}
+
+async function sendReq(id, btn){
+  if(btn){
+    btn.textContent='Sending...';
+    btn.disabled=true;
+  }
+  try{
+    const r=await fetch('/api/match/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({receiver_id:id})});
+    const d=await r.json();
+    if(d.error){
+      if(btn){
+        btn.textContent='🤝 Send Request';
+        btn.disabled=false;
+      }
+      toast(d.error,'error');
+      return;
+    }
+    if(btn){
+      btn.textContent='✓ Request Sent';
+      btn.style.background='#00c48c';
+      btn.style.color='#000';
+    }
+  }catch(e){
+    if(btn){
+      btn.textContent='🤝 Send Request';
+      btn.disabled=false;
+    }
+    toast('Something went wrong','error');
+  }
+}
+
+async function loadReqs(){
+  const r=await fetch('/api/match/requests');
+  const reqs=await r.json();
+  const c=document.getElementById('reqList');
+  if(!reqs.length){c.innerHTML='<div class="empty"><div class="empty-icon">📬</div><p>No pending requests</p></div>';return;}
+  c.innerHTML=reqs.map(r=>`
+    <div class="match-card" id="req${r.id}">
+      <div class="mc-head"><div class="mc-av" style="background:${ac(r.sender_name)}">${r.sender_name[0].toUpperCase()}</div><div><div class="mc-name">${esc(r.sender_name)}</div><div class="mc-common">wants to study with you</div></div></div>
+      <div class="mc-tags">${JSON.parse(r.sender_subjects||'[]').map(s=>`<span class="mc-tag">${s}</span>`).join('')}</div>
+      <div class="mc-actions">
+        <button class="btn-accept" onclick="respondReq(${r.id},'accepted')">✓ Accept</button>
+        <button class="btn-reject" onclick="respondReq(${r.id},'rejected')">✗ Decline</button>
+      </div>
+    </div>`).join('');
+}
+
+async function respondReq(id,status){
+  await fetch('/api/match/respond',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:id,status})});
+  document.getElementById('req'+id)?.remove();
+  toast(status==='accepted'?'🎉 Match accepted!':'Request declined');
+}
+
+// GROUPS
+async function loadGroups(){
+  const r=await fetch('/api/groups');
+  const groups=await r.json();
+  const c=document.getElementById('groupsList');
+  if(!groups.length){c.innerHTML='<div class="empty"><div class="empty-icon">👥</div><p>No groups yet. Create one!</p></div>';return;}
+  c.innerHTML=groups.map(g=>`
+    <div class="group-card">
+      <span class="g-tag">${esc(g.subject)}</span>
+      <div class="g-name">${esc(g.name)}</div>
+      <div class="g-desc">${esc(g.description||'')}</div>
+      <div class="g-meta">👤 ${esc(g.creator_name)} · 👥 ${g.member_count} members · ${timeAgo(g.created_at)}</div>
+      <div class="g-actions"><button class="btn-primary" onclick="openChat(${g.id},'${esc(g.name)}')">Join & Chat</button></div>
+    </div>`).join('');
+}
+
+async function createGroup(){
+  const name=document.getElementById('gName').value.trim();
+  const subject=document.getElementById('gSub').value;
+  const desc=document.getElementById('gDesc').value.trim();
+  if(!name||!subject){toast('Name and subject required','error');return;}
+  const r=await fetch('/api/groups',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,subject,description:desc})});
+  const d=await r.json();
+  if(d.error){toast(d.error,'error');return;}
+  document.getElementById('gName').value='';document.getElementById('gSub').value='';document.getElementById('gDesc').value='';
+  closeM('createGroup');toast('Group created! 👥');loadGroups();loadHomeDashboard();
+}
+
+async function openChat(id,name){
+  await fetch(`/api/groups/${id}/join`,{method:'POST'});
+  activeGroup=id;
+  document.getElementById('chatName').textContent=name;
+  document.getElementById('groupsList').classList.add('hidden');
+  document.getElementById('groupsHead').style.display='none';
+  document.getElementById('chatPanel').classList.remove('hidden');
+  loadMsgs();
+  if(chatTimer)clearInterval(chatTimer);
+  chatTimer=setInterval(loadMsgs,3000);
+}
+
+function closeChat(){
+  document.getElementById('chatPanel').classList.add('hidden');
+  document.getElementById('groupsList').classList.remove('hidden');
+  document.getElementById('groupsHead').style.display='';
+  if(chatTimer)clearInterval(chatTimer);
+  activeGroup=null;
+}
+
+async function loadMsgs(){
+  if(!activeGroup)return;
+  const r=await fetch(`/api/groups/${activeGroup}/messages`);
+  const msgs=await r.json();
+  const c=document.getElementById('chatMsgs');
+  const atBottom=c.scrollHeight-c.clientHeight<=c.scrollTop+20;
+  c.innerHTML=msgs.map(m=>`
+    <div class="chat-msg ${m.user_id===me.id?'me':'other'}">
+      ${m.user_id!==me.id?`<div class="msg-author">${esc(m.author_name)}</div>`:''}
+      ${esc(m.message)}
+    </div>`).join('');
+  if(atBottom||msgs.length<=5)c.scrollTop=c.scrollHeight;
+}
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg||!activeGroup)return;
+  await fetch(`/api/groups/${activeGroup}/messages`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+  input.value='';loadMsgs();
+}
+
+// NOTIFICATIONS
+async function pollNotif(){
+  const r=await fetch('/api/notifications');
+  const{notifications,unread}=await r.json();
+  const badge=document.getElementById('nBadge');
+  unread>0?(badge.textContent=unread,badge.classList.remove('hidden')):badge.classList.add('hidden');
+  const icons={answer:'💬',match_request:'🤝',match_accepted:'🎉'};
+  const list=document.getElementById('notifList');
+  if(!notifications.length){list.innerHTML='<div class="empty" style="padding:1.5rem">No notifications</div>';return;}
+  list.innerHTML=notifications.map(n=>`
+    <div class="n-item ${n.is_read?'':'unread'}">
+      <span>${icons[n.type]||'🔔'}</span>
+      <div>${esc(n.message)}<div class="n-time">${timeAgo(n.created_at)}</div></div>
+    </div>`).join('');
+}
+
+function toggleNotif(){
+  const p=document.getElementById('notifPanel');
+  p.classList.toggle('hidden');
+  if(!p.classList.contains('hidden'))markRead();
+}
+
+async function markRead(){
+  await fetch('/api/notifications/read',{method:'POST'});
+  document.getElementById('nBadge').classList.add('hidden');
+  document.querySelectorAll('.n-item.unread').forEach(e=>e.classList.remove('unread'));
+}
+
+document.addEventListener('click',e=>{
+  const p=document.getElementById('notifPanel');
+  if(!p.classList.contains('hidden')&&!p.contains(e.target)&&!e.target.closest('.notif-bell'))p.classList.add('hidden');
+});
+
+// PDF AI
+async function handlePdf(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  document.getElementById('pdfName').textContent=file.name;
+  document.getElementById('pdfResult').classList.remove('hidden');
+  document.getElementById('aiLoading').classList.remove('hidden');
+  document.getElementById('aiLoading').style.display='flex';
+  document.getElementById('aiOut').classList.add('hidden');
+  const base64=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.readAsDataURL(file);});
+  try {
+    const response=await fetch('/api/summarize-pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pdf:base64})});
+    const parsed=await response.json();
+    if(!response.ok){
+      throw new Error(parsed.error||'Unable to analyze PDF');
+    }
+    document.getElementById('aiSummary').textContent=parsed.summary||'Summary not available.';
+    document.getElementById('aiKeyPoints').innerHTML=(parsed.key_points||[]).map(p=>`<li>${esc(p)}</li>`).join('')||'<li>No key points extracted.</li>';
+  }catch(err){
+    console.error(err);
+    document.getElementById('aiSummary').textContent=err.message||'Error analyzing PDF.';
+    document.getElementById('aiKeyPoints').innerHTML='<li>No key points extracted.</li>';
+  }
+  document.getElementById('aiLoading').style.display='none';
+  document.getElementById('aiOut').classList.remove('hidden');
+}
+
+function resetPdf(){
+  document.getElementById('pdfInput').value='';
+  document.getElementById('pdfResult').classList.add('hidden');
+  document.getElementById('aiOut').classList.add('hidden');
+}
+</script>
+</body>
+</html>
 
